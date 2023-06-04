@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="node_modules/alpinejs/dist/cdn.js" defer></script>
+    <title>Document</title>
+</head>
+<body x-data="{
+    data: [],
+    search: '',
+    getData() {
+        fetch('http://localhost/livesearch-alpinejs/get_api_key.php')
+            .then(response => response.text())
+            .then(apiKey => {
+                fetch(`http://localhost/livesearch-alpinejs/rest_example.php?search=${this.search}`, {
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        this.data = data;
+                    })
+                    .catch(error => console.error(error));
+            })
+            .catch(error => console.error(error));
+    }
+}">
+    
+  <div>
+    <input type="text" x-model="search" x-on:input.debounce.500ms="getData()">
+ 
+    <ul>
+      <template x-for="(item, index) in data" :key="index">
+        <li>
+          <span x-text="item.name"></span> &amp; <span x-text="item.age"></span>
+        </li>
+      </template>
+    </ul>
+ 
+  </div>
+</body>
+</html>
